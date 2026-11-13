@@ -1,12 +1,8 @@
-// Déploie BlockLucky puis branche automatiquement le frontend sur la nouvelle adresse.
-// Usage : npm run deploy:sepolia
 const fs = require("fs");
 const path = require("path");
-const hre = require("hardhat");
-const { ethers, network } = hre;
+const { ethers, network } = require("hardhat");
 const { PARAMS, constructorArgs } = require("./params");
 
-const FRONTEND_FILE = path.join(__dirname, "..", "frontend", "index.html");
 const WEB_CONFIG_FILE = path.join(__dirname, "..", "web", "src", "lib", "blocklucky", "config.ts");
 
 async function main() {
@@ -38,10 +34,9 @@ async function main() {
 
   const isLocal = network.name === "hardhat" || network.name === "localhost";
 
-  // Frais calés sur le prix réel du réseau. Par défaut, ethers réserve une marge très au-dessus
-  // du prix de Sepolia, ce qui peut bloquer un compte de test peu approvisionné.
   let overrides = {};
   if (!isLocal) {
+    // Par défaut ethers réserve des frais bien au-dessus du prix réel de Sepolia et peut refuser le déploiement.
     const fee = await ethers.provider.getFeeData();
     const priority = ethers.parseUnits("0.05", "gwei");
     overrides = { maxPriorityFeePerGas: priority, maxFeePerGas: (fee.maxFeePerGas ?? 0n) * 2n + priority };
@@ -64,7 +59,6 @@ async function main() {
     console.log(`🔎 Etherscan : https://sepolia.etherscan.io/address/${address}`);
   }
 
-  // Sauvegarde de l'adresse (utilisée par scripts/verify.js)
   const deploymentsDir = path.join(__dirname, "..", "deployments");
   fs.mkdirSync(deploymentsDir, { recursive: true });
   const record = {
@@ -78,22 +72,12 @@ async function main() {
   };
   fs.writeFileSync(path.join(deploymentsDir, `${network.name}.json`), JSON.stringify(record, null, 2) + "\n");
 
-  // Mise à jour automatique de CONTRACT_ADDRESS dans frontend/index.html
   if (!isLocal) {
-    const html = fs.readFileSync(FRONTEND_FILE, "utf8");
-    const pattern = /const CONTRACT_ADDRESS\s*=\s*["'][^"']*["'];/;
-    if (!pattern.test(html)) throw new Error("CONTRACT_ADDRESS introuvable dans frontend/index.html");
-    fs.writeFileSync(FRONTEND_FILE, html.replace(pattern, `const CONTRACT_ADDRESS = "${address}";`));
-    console.log("📝 frontend/index.html mis à jour avec la nouvelle adresse.");
-
-    // Même chose pour le site React (web/)
-    if (fs.existsSync(WEB_CONFIG_FILE)) {
-      const ts = fs.readFileSync(WEB_CONFIG_FILE, "utf8");
-      const tsPattern = /export const CONTRACT_ADDRESS\s*=\s*["'][^"']*["'];/;
-      if (!tsPattern.test(ts)) throw new Error("CONTRACT_ADDRESS introuvable dans web/src/lib/blocklucky/config.ts");
-      fs.writeFileSync(WEB_CONFIG_FILE, ts.replace(tsPattern, `export const CONTRACT_ADDRESS = '${address}';`));
-      console.log("📝 web/src/lib/blocklucky/config.ts mis à jour avec la nouvelle adresse.");
-    }
+    const ts = fs.readFileSync(WEB_CONFIG_FILE, "utf8");
+    const pattern = /export const CONTRACT_ADDRESS\s*=\s*["'][^"']*["'];/;
+    if (!pattern.test(ts)) throw new Error("CONTRACT_ADDRESS introuvable dans web/src/lib/blocklucky/config.ts");
+    fs.writeFileSync(WEB_CONFIG_FILE, ts.replace(pattern, `export const CONTRACT_ADDRESS = '${address}';`));
+    console.log("📝 web/src/lib/blocklucky/config.ts mis à jour avec la nouvelle adresse.");
     console.log("\nÉtape suivante : npm run verify:sepolia");
   }
 }

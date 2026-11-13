@@ -65,12 +65,11 @@ contracts/test/RejectingPlayer.sol  Contrat utilisé uniquement par les tests
 test/BlockLucky.test.js             16 tests fonctionnels
 test/BlockLucky.scale.test.js       Test de charge : 10 000 joueurs
 scripts/params.js                   Paramètres de la loterie (prix, joueurs, durée, limite)
-scripts/deploy.js                   Déploiement sur Sepolia + mise à jour des deux sites
+scripts/deploy.js                   Déploiement sur Sepolia + mise à jour de l'adresse dans le site
 scripts/verify.js                   Publication du code source sur Etherscan
 scripts/demo.js                     Simulation d'une partie complète en local
 web/                                Site principal : React + TanStack Start + Tailwind
 web/src/lib/blocklucky/             Connexion au contrat, portefeuille, règles et mode démo (séparés du design)
-frontend/index.html                 Page web simple de secours (ethers.js v6 + MetaMask)
 deployments/                        Adresse du contrat déployé (générée par deploy.js)
 .env.example                        Modèle du fichier de secrets
 ```
@@ -111,7 +110,6 @@ Le script lance une blockchain locale le temps de la démo, et simule deux parti
 
 ```bash
 npm run web            # site principal sur http://localhost:5173
-npx serve frontend     # page de secours sur http://localhost:3000
 ```
 
 À l'arrivée, un écran de connexion propose :
@@ -136,7 +134,7 @@ Le site comprend une boule de loterie animée, un tirage avec confettis, des tic
 2. Lance les deux commandes :
 
 ```bash
-npm run deploy:sepolia   # déploie, puis écrit l'adresse dans les deux sites et dans deployments/sepolia.json
+npm run deploy:sepolia   # déploie, puis écrit l'adresse dans le site et dans deployments/sepolia.json
 npm run verify:sepolia   # publie le code source sur Etherscan
 ```
 

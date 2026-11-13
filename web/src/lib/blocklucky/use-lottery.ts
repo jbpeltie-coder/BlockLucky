@@ -4,7 +4,6 @@ import { ABI, CHAIN_HEX, CHAIN_ID, CONTRACT_ADDRESS, PLAYERS_PAGE, TICKETS_WINDO
 import { DEMO_RULES, frenchError, type Rules } from './rules';
 import { existingWallet, injectedWallet, isMobile, openInMetaMaskApp, requestWallet, usingSdk, type Ethereum } from './wallet';
 
-// players / tickets = fenêtre affichée (derniers arrivés) ; playerCount / ticketCount = totaux de la partie.
 export interface LotteryState { rules: Rules; round: number; end: number; tickets: string[]; ticketOffset: number; players: string[]; counts: Record<string, number>; playerCount: number; ticketCount: number; pot: bigint; winner: string; prize: bigint; owned: number; pending: bigint; balance: bigint }
 export interface FeedItem { id: string; kind: 'ticket' | 'winner' | 'withdraw'; address: string; value: string; time: number; hash?: string | undefined; demo: boolean }
 export interface Win { address: string; prize: bigint; tickets: string[]; hash?: string | undefined; demo: boolean }
@@ -52,7 +51,6 @@ export function useLottery() {
       const [price, maxPlayers, duration, maxTickets, round, end, playerCountRaw, ticketCountRaw, pot, winner, prize, timeLeft] = await Promise.all([
         c.getFunction('ticketPrice')(), c.getFunction('maxPlayers')(), c.getFunction('roundDuration')(), c.getFunction('maxTicketsPerPlayer')(), c.getFunction('roundId')(), c.getFunction('roundEndTime')(), c.getFunction('getPlayerCount')(), c.getFunction('getTicketCount')(), c.getFunction('getPot')(), c.getFunction('lastWinner')(), c.getFunction('lastPrize')(), c.getFunction('timeLeft')(),
       ]);
-      // Lecture paginée : seulement les derniers joueurs et tickets, même avec 10 000 participants.
       const playerCount = Number(playerCountRaw); const ticketCount = Number(ticketCountRaw);
       const playerOffset = Math.max(0, playerCount - PLAYERS_PAGE); const ticketOffset = Math.max(0, ticketCount - TICKETS_WINDOW);
       const [[players, playerTickets], tickets] = await Promise.all([
@@ -84,10 +82,9 @@ export function useLottery() {
           if (a['player'].toLowerCase() === accountRef.current.toLowerCase()) setTicketCards(t => [...t, { round: Number(a['roundId']), number: before.ticketCount + 1, address: a['player'], hash: receipt.hash, demo: false }]);
         }
         if (parsed.name === 'WinnerPicked') celebrate({ address: a['winner'], prize: a['prize'], tickets: before.tickets.length ? [...before.tickets, ...(before.playerCount === Number(before.rules.maxPlayers) - 1 ? [accountRef.current] : [])] : previousTickets.current, hash: receipt.hash, demo: false }, `round-${Number(a['roundId'])}`);
-      } catch { /* Ignore logs emitted by other contracts. */ }
+      } catch { continue; }
     }
   }, [celebrate, feedEntry]);
-  // Branche le portefeuille sur le contrat. Nouveau BrowserProvider à chaque fois : ethers garde le réseau en cache.
   const attach = useCallback(async (ethereum: Ethereum, chain: number) => {
     setNetwork(chain);
     const p = new BrowserProvider(ethereum); providerRef.current = p;
@@ -98,7 +95,6 @@ export function useLottery() {
     if (modeRef.current) return;
     setLoading(true); setError(''); setMissingWallet(false);
     try {
-      // Extension si présente ; sinon appli MetaMask (redirection sur téléphone, QR code sur ordinateur).
       const ethereum = await requestWallet();
       walletRef.current = ethereum; setWallet(ethereum);
       if (change) await ethereum.request({ method: 'wallet_requestPermissions', params: [{ eth_accounts: {} }] });
@@ -106,7 +102,6 @@ export function useLottery() {
       const chain = Number(await ethereum.request({ method: 'eth_chainId' }));
       setAccount(addresses[0] || ''); accountRef.current = addresses[0] || '';
       await attach(ethereum, chain);
-      // Mauvais réseau : on demande tout de suite le passage sur Sepolia (une manip de moins).
       if (chain !== CHAIN_ID) {
         try { await ethereum.request({ method: 'wallet_switchEthereumChain', params: [{ chainId: CHAIN_HEX }] }); }
         catch (switchError) { setError(frenchError(switchError)); }
@@ -124,7 +119,6 @@ export function useLottery() {
     const timer = setInterval(() => setNow(n => n + 1), 1000);
     return () => clearInterval(timer);
   }, []);
-  // Au chargement : extension / appli MetaMask déjà là, ou session SDK précédente à reprendre.
   useEffect(() => {
     setMobile(isMobile());
     let active = true;
@@ -140,7 +134,6 @@ export function useLottery() {
       setAccount(owner); accountRef.current = owner; setTicketCards([]); setPhase('idle'); setTxHash('');
       if (!owner) { setState(emptyState()); } else void refresh();
     };
-    // Extension : rechargement classique. Appli MetaMask (SDK) : on se rebranche sans recharger pour garder la session.
     const chainChanged = (...args: unknown[]) => {
       if (!usingSdk()) { window.location.reload(); return; }
       generation.current++; void attach(ethereum, Number(args[0]));

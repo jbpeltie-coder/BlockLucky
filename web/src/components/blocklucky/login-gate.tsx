@@ -16,7 +16,6 @@ interface LoginGateProps {
   onOpenInApp: () => void;
 }
 
-/** Écran de connexion affiché à l'arrivée, tant qu'aucun portefeuille n'est connecté. */
 export function LoginGate({ open, loading, mobile, error, missingWallet, onConnect, onDemo, onBrowse, onOpenInApp }: LoginGateProps) {
   const reduced = useReducedMotion();
   return <AnimatePresence>

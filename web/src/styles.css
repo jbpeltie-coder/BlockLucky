@@ -1,33 +1,8 @@
-/*
- * Tailwind v4 entry: config lives here, with no tailwind.config.js or PostCSS plugin.
- * - Keep every @import in this top block, above @theme and the rest of the file. Install an
- *   npm package before @importing its CSS. Never @import a remote URL (web fonts, CDN CSS): the
- *   build resolves @import from the filesystem. Load those with a <link> in the head() of
- *   src/routes/__root.tsx and name the family in a --font-* token in @theme inline below.
- */
 @import "tailwindcss" source(none);
 @source "../src";
 @import "tw-animate-css";
 
 @custom-variant dark (&:is(.dark *));
-
-/*
- * Design system definition.
- *
- * The design lives in this file: oklch color tokens on the shadcn variables
- * (--background, --foreground, --primary, --secondary, --muted, --accent, ...) plus
- * new tokens as needed, font tokens, and custom styles and animations.
- *
- * The @theme inline block maps CSS custom properties to Tailwind utility
- * classes (e.g. --color-primary -> bg-primary, text-primary).
- *
- * The :root and .dark blocks define the actual color values using oklch.
- * All colors MUST use oklch format.
- *
- * To add a new semantic color:
- * 1. Add the variable to :root (light value) and .dark (dark value)
- * 2. Register it in @theme inline as --color-<name>: var(--<name>)
- */
 
 @theme inline {
   --font-sans: "DM Sans", sans-serif;
@@ -259,7 +234,6 @@ h1 > span { color: var(--primary); text-shadow: 0 0 45px color-mix(in oklab, var
 .extracted-ball { position: absolute; top: 70px; left: calc(50% - 35px); width: 70px; height: 70px; display: grid; place-items: center; border-radius: 50%; background: var(--glass-surface); border: 2px solid var(--gold); box-shadow: var(--shadow-gold); z-index: 8; }
 @media (max-width: 640px) { .draw-scene { margin-inline: calc((100% - 390px) / 2); transform: scale(.8); } .draw-scene .lottery-machine { transform: none; margin: 0; } }
 
-/* Hybrid dashboard: a crisp navigation rail beside the immersive lottery. */
 :root {
   --sidebar-surface: oklch(0.46 0.295 285);
   --sidebar-selected: oklch(1 0 0);
@@ -384,7 +358,6 @@ h1 > span { color: var(--primary); text-shadow: 0 0 45px color-mix(in oklab, var
   .dashboard-workspace .footer { padding-inline: 22px; }
 }
 
-/* Confirmed reference direction: white workspace, electric violet navigation, lime actions. */
 .dashboard-sidebar { --foreground: oklch(1 0 0); --muted-foreground: oklch(0.87 0.065 289); --primary: oklch(1 0 0); --cyan: oklch(0.94 0.18 122); --dashboard-divider: oklch(1 0 0 / .22); color: var(--foreground); }
 .sidebar-nav .sidebar-active { border-radius: 24px; }
 .sidebar-nav .button-nav:hover { color: var(--foreground); background: color-mix(in oklab, var(--foreground) 15%, transparent); }
@@ -425,7 +398,6 @@ h1 > span { color: var(--primary); text-shadow: 0 0 45px color-mix(in oklab, var
   .dashboard-workspace .pot-caption, .dashboard-workspace .time-stat p { font-size: 9px; }
 }
 
-/* Epitech Digital School: official violet and magenta, pop-tech editorial identity. */
 :root {
   --primary: oklch(0.345 0.15 285);
   --pink: oklch(0.455 0.19 333);
@@ -587,7 +559,6 @@ h1 > span { color: var(--primary); text-shadow: 0 0 45px color-mix(in oklab, var
 }
 @media (prefers-reduced-motion: reduce) { .digital-objects figure { opacity: 1 !important; transform: none !important; } }
 
-/* Editorial identity: geometric Block / expressive Lucky, restrained Epitech colours. */
 :root { --logo-accent: var(--pink); --editorial-highlight: oklch(0.88 0.07 335); }
 .brand .brand-icon, .sidebar-brand .brand-icon { background: transparent; border: none; transform: none; border-radius: 0; }
 .brand-icon img { width: 100%; height: 100%; object-fit: contain; }
@@ -654,7 +625,6 @@ h1 > span { color: var(--primary); text-shadow: 0 0 45px color-mix(in oklab, var
   .dashboard-workspace .section-heading h2 { font-size: 25px; }
 }
 
-/* Quiet rhythm: retain the expressive cover, let the lottery breathe. */
 .opening-screen { position: fixed; inset: 0; z-index: 100; display: grid; place-items: center; background: var(--background); color: var(--foreground); pointer-events: none; }
 .opening-identity { display: flex; flex-direction: column; align-items: center; padding: 24px; }
 .opening-identity > img { object-fit: contain; margin-bottom: 28px; }
@@ -751,7 +721,6 @@ section[id] { scroll-margin-top: 28px; }
   .digital-intro-content > * { transform: none !important; opacity: 1 !important; }
 }
 
-/* ---- Écran de connexion (login-gate.tsx) ---- */
 .login-gate { position: fixed; inset: 0; z-index: 60; display: grid; place-items: center; padding: 24px 16px; overflow: auto; isolation: isolate; background: var(--primary); color: var(--digital-white); }
 .login-cover { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; z-index: -2; }
 .login-gate::before { content: ""; position: absolute; inset: 0; z-index: -1; background: linear-gradient(180deg, color-mix(in oklab, var(--primary) 45%, transparent), color-mix(in oklab, var(--primary) 80%, black 20%)); }

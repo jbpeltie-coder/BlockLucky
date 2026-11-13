@@ -1,6 +1,3 @@
-// Démo hors-ligne : simule une partie complète sur une blockchain locale Hardhat.
-// Plan B si Sepolia est lent pendant la soutenance.
-// Usage : npx hardhat run scripts/demo.js   (ou npm run demo)
 const { ethers, network } = require("hardhat");
 const { DEMO_PARAMS: PARAMS, constructorArgs } = require("./params");
 
@@ -28,7 +25,6 @@ async function main() {
 
   const balancesBefore = await Promise.all(players.map((p) => ethers.provider.getBalance(p.address)));
 
-  // --- Partie 1 : 5 joueurs achètent un ticket -> tirage automatique ---
   console.log("— Partie 1 : tirage automatique quand 5 joueurs ont acheté —");
   let receipt;
   for (let i = 0; i < players.length; i++) {
@@ -59,7 +55,6 @@ async function main() {
   console.log(`     Solde de ${names[idx]} : ${eth(balancesBefore[idx])} → ${eth(balanceAfter)} (sa mise de ${eth(PARAMS.ticketPrice)} et le gas déduits)`);
   console.log(`  Contrat remis à zéro : partie n°${await lottery.roundId()}, cagnotte ${eth(await lottery.getPot())}\n`);
 
-  // --- Partie 2 : peu de joueurs -> tirage à la fin du temps imparti ---
   console.log("— Partie 2 : tirage quand le temps est écoulé —");
   await (await lottery.connect(players[0]).buyTicket({ value: PARAMS.ticketPrice })).wait();
   await (await lottery.connect(players[0]).buyTicket({ value: PARAMS.ticketPrice })).wait();

@@ -5,11 +5,10 @@ const { anyValue } = require("@nomicfoundation/hardhat-chai-matchers/withArgs");
 
 const PRICE = ethers.parseEther("0.01");
 const MAX_PLAYERS = 5;
-const DURATION = 600; // secondes
+const DURATION = 600;
 const MAX_TICKETS = 2;
 
 describe("BlockLucky", function () {
-  // Déploie un contrat neuf avant chaque test (état propre et rapide grâce à loadFixture)
   async function deployFixture() {
     const [owner, ...players] = await ethers.getSigners();
     const BlockLucky = await ethers.getContractFactory("BlockLucky");
@@ -121,7 +120,6 @@ describe("BlockLucky", function () {
       expect(await lottery.lastPrize()).to.equal(pot);
       expect(await ethers.provider.getBalance(await lottery.getAddress())).to.equal(0);
       if (idx < 4) {
-        // Les 4 premiers n'ont rien payé pendant cette transaction : gain exact
         expect(await ethers.provider.getBalance(winner)).to.equal(before[idx] + pot);
       }
     });
@@ -134,7 +132,6 @@ describe("BlockLucky", function () {
       expect(await lottery.getPlayerCount()).to.equal(0);
       expect(await lottery.roundEndTime()).to.equal(0);
       expect(await lottery.getPot()).to.equal(0);
-      // Un ancien joueur peut racheter 2 tickets dans la nouvelle partie
       await lottery.connect(players[0]).buyTicket({ value: PRICE });
       await lottery.connect(players[0]).buyTicket({ value: PRICE });
       expect(await lottery.ticketsOf(2, players[0].address)).to.equal(2);
@@ -153,13 +150,11 @@ describe("BlockLucky", function () {
       await lottery.connect(players[1]).buyTicket({ value: PRICE });
       await time.increase(DURATION);
 
-      // Plus d'achat possible une fois le temps écoulé
       await expect(lottery.connect(players[2]).buyTicket({ value: PRICE })).to.be.revertedWithCustomError(
         lottery,
         "RoundOver"
       );
 
-      // Un spectateur (players[9]) déclenche le tirage
       await expect(lottery.connect(players[9]).drawWinner()).to.emit(lottery, "WinnerPicked");
       expect([players[0].address, players[1].address]).to.include(await lottery.lastWinner());
       expect(await lottery.lastPrize()).to.equal(PRICE * 2n);
@@ -205,7 +200,6 @@ describe("BlockLucky", function () {
       const Rejecting = await ethers.getContractFactory("RejectingPlayer");
       const rejecter = await Rejecting.deploy(await lottery.getAddress());
 
-      // Seul joueur = gagnant garanti, tirage au temps écoulé
       await rejecter.buy({ value: PRICE });
       await time.increase(DURATION);
       await expect(lottery.drawWinner())
@@ -213,16 +207,13 @@ describe("BlockLucky", function () {
         .withArgs(await rejecter.getAddress(), PRICE);
 
       expect(await lottery.pendingWithdrawals(await rejecter.getAddress())).to.equal(PRICE);
-      expect(await lottery.getPot()).to.equal(0); // le gain mis de côté n'est pas recompté dans la cagnotte
+      expect(await lottery.getPot()).to.equal(0);
 
-      // La partie suivante fonctionne normalement
       await lottery.connect(players[0]).buyTicket({ value: PRICE });
       expect(await lottery.getPot()).to.equal(PRICE);
 
-      // Personne d'autre ne peut retirer ce gain
       await expect(lottery.connect(players[1]).withdraw()).to.be.revertedWithCustomError(lottery, "NothingToWithdraw");
 
-      // Le gagnant récupère son dû quand il accepte enfin les paiements
       await rejecter.setAcceptPayments(true);
       await expect(rejecter.claim()).to.changeEtherBalance(rejecter, PRICE);
       expect(await lottery.pendingWithdrawals(await rejecter.getAddress())).to.equal(0);

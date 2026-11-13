@@ -21,7 +21,6 @@ export const ABI = [
   'error RoundOver()', 'error RoundNotOver()', 'error NoPlayers()', 'error NothingToWithdraw()',
   'error TransferFailed()', 'error Reentrancy()',
 ];
-// Le site ne lit jamais toute la liste (jusqu'à 10 000 joueurs) : seulement les derniers arrivés.
 export const PLAYERS_PAGE = 50;
 export const TICKETS_WINDOW = 60;
 export const shortAddress = (address: string) => `${address.slice(0, 6)}…${address.slice(-4)}`;

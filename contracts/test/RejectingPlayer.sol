@@ -6,8 +6,6 @@ interface IBlockLucky {
     function withdraw() external;
 }
 
-/// @dev Contrat utilisé UNIQUEMENT dans les tests : un "joueur" qui refuse de recevoir des ETH,
-///      pour vérifier que la loterie ne se bloque pas si le gagnant ne peut pas être payé.
 contract RejectingPlayer {
     IBlockLucky public immutable lottery;
     bool public acceptPayments;

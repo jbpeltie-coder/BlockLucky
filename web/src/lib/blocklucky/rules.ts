@@ -15,12 +15,16 @@ const errors: Record<string, string> = {
   RoundOver: 'Temps écoulé : lance le tirage !', RoundNotOver: "La partie n’est pas encore terminée.",
   NoPlayers: 'Aucun participant.', NothingToWithdraw: 'Aucun gain à récupérer.', TransferFailed: 'Le transfert a échoué. Réessaie.', Reentrancy: 'Transaction déjà en cours.',
 };
+function safeParseError(data: string) {
+  try { return new Interface(ABI).parseError(data); } catch { return null; }
+}
 export function frenchError(error: unknown) {
   const e = error as { code?: string | number; data?: string; error?: { data?: string; code?: number }; info?: { error?: { code?: number; data?: string } }; shortMessage?: string; message?: string; reason?: string };
   if (e.code === 'ACTION_REJECTED' || e.code === 4001 || e.error?.code === 4001 || e.info?.error?.code === 4001) return 'Transaction annulée.';
   if (e.code === 'INSUFFICIENT_FUNDS' || /insufficient funds/i.test(e.message || '')) return 'Solde insuffisant : il faut un peu plus que 0,01 ETH pour couvrir les frais. Récupère des SepoliaETH gratuits avec le lien ci-dessous.';
   const data = e.data || e.error?.data || e.info?.error?.data;
-  if (data) { try { const parsed = new Interface(ABI).parseError(data); if (parsed && errors[parsed.name]) return errors[parsed.name] ?? "Erreur du contrat."; } catch { /* RPC sometimes supplies non-ABI data. */ } }
+  const parsed = data ? safeParseError(data) : null;
+  if (parsed && errors[parsed.name]) return errors[parsed.name] ?? "Erreur du contrat.";
   for (const [name, message] of Object.entries(errors)) if ((e.message || e.reason || '').includes(name)) return message;
   return 'Impossible de terminer cette opération. Vérifie MetaMask et ta connexion à Sepolia, puis réessaie.';
 }

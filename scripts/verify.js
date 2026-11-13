@@ -1,5 +1,3 @@
-// Publie le code source du contrat sur Etherscan (badge "Contract Source Code Verified").
-// Usage : npm run verify:sepolia   (après npm run deploy:sepolia)
 const fs = require("fs");
 const path = require("path");
 const hre = require("hardhat");
