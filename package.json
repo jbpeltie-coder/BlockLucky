@@ -14,7 +14,7 @@
     "web": "npm --prefix web run dev",
     "test:contract": "hardhat test test/BlockLucky.test.js",
     "test:scale": "hardhat test test/BlockLucky.scale.test.js",
-    "web:deploy": "cd web && NITRO_PRESET=netlify npm run build && npx -y netlify-cli@27.17.0 deploy --prod --no-build --dir dist --functions .netlify/functions-internal --site blocklucky-etherbay"
+    "web:deploy": "cd web && npm run build && npx -y wrangler@4.161.0 deploy"
   },
   "license": "MIT",
   "devDependencies": {

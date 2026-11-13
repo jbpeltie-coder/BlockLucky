@@ -8,7 +8,7 @@ Interface de la Grande Tombola d'EtherBay : React, TanStack Start (rendu serveur
 npm install     # installation (le fichier .npmrc active legacy-peer-deps)
 npm run dev     # site en local sur http://localhost:5173
 npm test        # tests (règles de la loterie, routage)
-npm run build   # version hébergée (préréglage Netlify)
+npm run build   # version hébergée (Cloudflare Workers, voir wrangler.jsonc)
 ```
 
 ## Organisation

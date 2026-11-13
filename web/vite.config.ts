@@ -7,7 +7,7 @@ import { tanstackStart } from '@tanstack/react-start/plugin/vite';
 import { nitro } from 'nitro/vite';
 
 // Site BlockLucky : TanStack Start (rendu serveur) + React + Tailwind.
-// Nitro produit la version hébergée (préréglage Netlify, modifiable via NITRO_PRESET).
+// Nitro produit la version hébergée (préréglage Cloudflare Workers, modifiable via NITRO_PRESET).
 export default defineConfig(({ command }) => ({
   plugins: [
     tailwindcss(),
@@ -16,7 +16,7 @@ export default defineConfig(({ command }) => ({
       server: { entry: 'server' },
       importProtection: { behavior: 'error', client: { files: ['**/server/**'], specifiers: ['server-only'] } },
     }),
-    ...(command === 'build' ? [nitro({ preset: process.env['NITRO_PRESET'] || 'netlify' })] : []),
+    ...(command === 'build' ? [nitro({ preset: process.env['NITRO_PRESET'] || 'cloudflare-module' })] : []),
     viteReact(),
   ],
   resolve: {

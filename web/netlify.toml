@@ -1,9 +1,0 @@
-# Déploiement Netlify du site BlockLucky (dossier web/).
-# Si le site est relié au dépôt GitHub, mettre « web » comme Base directory dans Netlify.
-[build]
-  command = "npm run build"
-  publish = "dist"
-
-[build.environment]
-  NITRO_PRESET = "netlify"
-  NODE_VERSION = "22"

@@ -8,7 +8,7 @@ Le contrat est déployé sur le **testnet Sepolia** : les ethers utilisés sont 
 
 | | |
 |---|---|
-| 🌐 **Site en ligne** | https://blocklucky-etherbay.netlify.app |
+| 🌐 **Site en ligne** | https://blocklucky-etherbay.blocklucky-web.workers.dev |
 | 📜 **Contrat (Sepolia)** | [`0xAc719CD58E537Cde7c7dA732496622eE1E9B1981`](https://sepolia.etherscan.io/address/0xAc719CD58E537Cde7c7dA732496622eE1E9B1981#code) : code source vérifié sur Etherscan |
 
 ## Règles du jeu
@@ -37,7 +37,7 @@ Ces paramètres sont fixés au déploiement dans `scripts/params.js`. Les démos
 | Facilité d'utilisation (responsable événementiel) | Écran de connexion en un clic, appli MetaMask sur téléphone (redirection puis retour), passage automatique sur Sepolia, messages d'erreur en français, mode démo sans portefeuille |
 | Événement mémorable et inclusif (Maire) | Boule de loterie animée, tirage avec confettis, site adapté au mobile, animations réduites si le système le demande, navigation au clavier |
 | Éducatif | Sections « Comment ça marche » et « Transparence » sur le site |
-| Étapes : environnement, contrat, tests, déploiement, soutenance | Hardhat, contrat, 17 tests, déploiement Sepolia et Netlify, démo locale de secours |
+| Étapes : environnement, contrat, tests, déploiement, soutenance | Hardhat, contrat, 17 tests, déploiement Sepolia et Cloudflare, démo locale de secours |
 | Outil : Remix ou Hardhat | Hardhat, pour les tests en JavaScript, les scripts de déploiement et la vérification Etherscan |
 | Éthique et réglementation | Mention « 18 ans et plus » et numéro Joueurs Info Service (09 74 75 13 13) sur le site ; ethers fictifs uniquement (voir « Limites ») |
 
@@ -144,13 +144,13 @@ Le compte doit avoir quelques SepoliaETH, par exemple via le [faucet Google Clou
 
 > ⚠️ Le fichier `.env` est ignoré par git. Ne le partage jamais, et n'utilise jamais la clé privée d'un compte qui contient de vrais fonds.
 
-### Site sur Netlify
+### Site sur Cloudflare Workers
 
 ```bash
 npm run web:deploy
 ```
 
-Cette commande compile le site pour Netlify et met la nouvelle version en ligne sur https://blocklucky-etherbay.netlify.app. Il faut être connecté à l'outil Netlify (`npx netlify-cli login`) avec un compte qui a accès au site.
+Cette commande compile le site pour Cloudflare Workers et met la nouvelle version en ligne sur https://blocklucky-etherbay.blocklucky-web.workers.dev. Il faut être connecté à Cloudflare (`npx wrangler login`) avec un compte qui a accès au site.
 
 ## Tester avec plusieurs joueurs
 
@@ -177,4 +177,4 @@ Cette commande compile le site pour Netlify et met la nouvelle version en ligne 
 
 ## Technologies
 
-Solidity 0.8.24 · Hardhat · ethers.js v6 · React · TanStack Start · Tailwind CSS · MetaMask (extension et SDK mobile) · Etherscan · Netlify · testnet Sepolia
+Solidity 0.8.24 · Hardhat · ethers.js v6 · React · TanStack Start · Tailwind CSS · MetaMask (extension et SDK mobile) · Etherscan · Cloudflare Workers · testnet Sepolia
