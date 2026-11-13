@@ -1,0 +1,17 @@
+# Dépendances
+node_modules/
+
+# Secrets : ne JAMAIS commiter ce fichier
+.env
+.env.*
+!.env.example
+
+# Fichiers générés par Hardhat
+artifacts/
+cache/
+typechain-types/
+coverage/
+coverage.json
+
+# Système
+.DS_Store
